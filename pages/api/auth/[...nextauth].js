@@ -14,5 +14,11 @@ export default NextAuth({
       session.user = user;
       return session;
     },
+    async jwt({token, account}) {
+      if (account) {
+        token.accessToken = account.refresh_token;
+      }
+      return token;
+    },
   },
 });
