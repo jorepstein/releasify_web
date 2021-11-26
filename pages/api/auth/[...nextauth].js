@@ -8,5 +8,11 @@ export default NextAuth({
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET
     }),
   ],
-  secret: process.env.NEXT_AUTH_SECRET
+  secret: process.env.NEXT_AUTH_SECRET,
+  callbacks: {
+    async session(session, user) {
+      session.user = user;
+      return session;
+    },
+  },
 });
