@@ -15,6 +15,7 @@ export default function Component() {
     const res = await fetch('/api/playlists');
     const {items} = await res.json();
     setList(items);
+    console.log(items);
   };
 
   if(session) {
