@@ -15,6 +15,7 @@ export default function Component() {
     const res = await fetch('/api/playlists');
     console.log(res);
     const f = await res.json();
+    console.log("F!!!!!!!!!!!!!!!!!", f);
     const {items} = f;
     setList(items);
     console.log(items);
