@@ -10,9 +10,11 @@ const handler = async (req, res) => {
     const {
       token: {accessToken},
     } = await getSession({req});
+    console.log("TOKEN!!!!!!!!", token);
     const response = await getUsersPlaylists(accessToken);
+    console.log(response);
     const {items} = await response.json();
-  
+    console.log("ITEMS!!!", items);
     return res.status(200).json({items});
 };
   
