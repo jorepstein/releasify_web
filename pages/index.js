@@ -13,7 +13,7 @@ export default function Component() {
 
   const getMyPlaylists = async () => {
     const res = await fetch('/api/playlists');
-    console.log(rest);
+    console.log(res);
     const {items} = await res.json();
     setList(items);
     console.log(items);
