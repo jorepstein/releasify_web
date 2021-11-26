@@ -10,6 +10,6 @@ export default function Component() {
   }
   return <>
     Not signed in <br/>
-    <button onClick={() => signIn("spotify", { callbackUrl: "releasify-web-git-dev-jorepstein.vercel.app" })}>Sign in</button>
+    <button onClick={() => signIn("spotify")}>Sign in</button>
   </>
 }
