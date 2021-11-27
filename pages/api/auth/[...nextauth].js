@@ -12,6 +12,7 @@ export default NextAuth({
   callbacks: {
     async session(session, user) {
       session.user = user;
+      session.accessToken = token.accessToken;
       return session;
     },
     async jwt({token, account}) {

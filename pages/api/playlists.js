@@ -15,9 +15,9 @@ const handler = async (req, res) => {
     console.log("F!F!F!F!F", f)
     console.log("TOKEN!!!!!!!!", accessToken);
     const response = await getUsersPlaylists(accessToken);
-    console.log(response);
+    // console.log(response);
     const {items} = await response.json();
-    console.log("ITEMS!!!", items);
+    // console.log("ITEMS!!!", items);
     return res.status(200).json({items});
 };
   
