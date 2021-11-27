@@ -7,9 +7,12 @@ const TOKEN_ENDPOINT = `https://accounts.spotify.com/api/token`;
 const PLAYLISTS_ENDPOINT = 'https://api.spotify.com/v1/me/playlists';
 
 const handler = async (req, res) => {
+
+    const f = await getSession({req});
     const {
-      token: {accessToken},
-    } = await getSession({req});
+        token: {accessToken},
+      } = f;
+    console.log("F!F!F!F!F", f)
     console.log("TOKEN!!!!!!!!", accessToken);
     const response = await getUsersPlaylists(accessToken);
     console.log(response);
