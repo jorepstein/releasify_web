@@ -10,7 +10,7 @@ export default NextAuth({
   ],
   secret: process.env.NEXT_AUTH_SECRET,
   callbacks: {
-    async session(session, user) {
+    async session(session, token, user) {
       session.user = user;
       session.accessToken = token.accessToken;
       return session;
