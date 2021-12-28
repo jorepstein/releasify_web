@@ -1,4 +1,4 @@
-import { useSession, signIn, signOut } from "next-auth/react";
+import { getSession, useSession, signIn, signOut } from "next-auth/react";
 import { useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -7,6 +7,8 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+
+import run from "./api/run";
 
 export default function AppBox() {
   const { data: session } = useSession();
@@ -50,14 +52,15 @@ function Component() {
   const getMyPlaylists = async () => {
     const res = await fetch("/api/playlists");
     const f = await res.json();
+    console.log(f);
     const { items } = f;
     setPlaylists(items);
   };
 
   const onPlaylistClick = (event, playlistId) => {
-    if( selectedPlaylistIds.has(playlistId)) {
+    if (selectedPlaylistIds.has(playlistId)) {
       selectedPlaylistIds.delete(playlistId);
-    }else {
+    } else {
       selectedPlaylistIds.add(playlistId);
     }
     setSelectedPlaylistIds(new Set(selectedPlaylistIds));
@@ -72,7 +75,7 @@ function Component() {
           selectedPlaylistIds={selectedPlaylistIds}
           onPlaylistClick={onPlaylistClick}
         />
-        <RunButton />
+        <RunButton selectedPlaylistIds={selectedPlaylistIds} />
       </>
     );
   }
@@ -82,9 +85,7 @@ function Component() {
 function PlaylistBox(props) {
   return (
     <Box sx={{ overflow: "auto", height: "100%", maxHeight: "500px" }}>
-      <PlaylistList
-        {...props}
-      />
+      <PlaylistList {...props} />
     </Box>
   );
 }
@@ -98,7 +99,9 @@ function PlaylistList({ playlists, selectedPlaylistIds, onPlaylistClick }) {
           name={item.name}
           imageUrl={item.images[0]?.url}
           selected={selectedPlaylistIds.has(item.id)}
-          onPlaylistClick={(event) => {onPlaylistClick(event, item.id)}}
+          onPlaylistClick={(event) => {
+            onPlaylistClick(event, item.id);
+          }}
         />
       ))}
     </List>
@@ -114,6 +117,13 @@ function Playlist({ name, imageUrl, selected, onPlaylistClick }) {
   );
 }
 
-function RunButton() {
-  return <Button variant="outline">Run</Button>;
+function RunButton({ selectedPlaylistIds }) {
+  async function onClick() {
+    return await run(Array.from(selectedPlaylistIds));
+  }
+  return (
+    <Button variant="outline" onClick={onClick}>
+      Run
+    </Button>
+  );
 }
