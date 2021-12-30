@@ -10,7 +10,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 
 import run from "./api/run";
-import {makeNewPlaylist} from "./api/ui_actions";
+import { makeNewPlaylist } from "./api/ui_actions";
 
 export default function AppBox() {
   const { data: session } = useSession();
@@ -138,7 +138,7 @@ function RunButton({ onRunClick }) {
   );
 }
 
-function StatusBox({newPlaylistUrl}) {
+function StatusBox({ newPlaylistUrl }) {
   return (
     <Box>
       <NewPlaylistLink newPlaylistUrl={newPlaylistUrl} />
@@ -146,6 +146,10 @@ function StatusBox({newPlaylistUrl}) {
   );
 }
 
-function NewPlaylistLink({newPlaylistUrl}) {
-  return <Link href={newPlaylistUrl}>{newPlaylistUrl}</Link>;
+function NewPlaylistLink({ newPlaylistUrl }) {
+  return (
+    <Link href={newPlaylistUrl} target="_blank">
+      {newPlaylistUrl}{" "}
+    </Link>
+  );
 }
