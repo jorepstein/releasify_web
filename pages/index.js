@@ -10,7 +10,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 
 import run from "./api/run";
-import { makeNewPlaylist } from "./api/ui_actions";
+import { makeNewPlaylist, getUserPlaylists } from "./api/ui_actions";
 
 export default function AppBox() {
   const { data: session } = useSession();
@@ -54,11 +54,8 @@ function Component() {
   const [newPlaylistId, setNewPlaylistId] = useState([]);
 
   const getMyPlaylists = async () => {
-    const res = await fetch("/api/playlists");
-    const f = await res.json();
-    console.log(f);
-    const { items } = f;
-    setPlaylists(items);
+    let userPlaylists = await getUserPlaylists(session.user);
+    setPlaylists(userPlaylists);
   };
 
   const onPlaylistClick = (event, playlistId) => {
@@ -79,7 +76,7 @@ function Component() {
   if (session) {
     return (
       <>
-        <button onClick={() => getMyPlaylists()}>Get all my playlists</button>
+        <button onClick={() => getMyPlaylists(session.user)}>Get all my playlists</button>
         <PlaylistBox
           playlists={playlists}
           selectedPlaylistIds={selectedPlaylistIds}
@@ -149,7 +146,7 @@ function StatusBox({ newPlaylistUrl }) {
 function NewPlaylistLink({ newPlaylistUrl }) {
   return (
     <Link href={newPlaylistUrl} target="_blank">
-      {newPlaylistUrl}{" "}
+      {newPlaylistUrl}
     </Link>
   );
 }
