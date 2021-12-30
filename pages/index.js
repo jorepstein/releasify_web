@@ -2,6 +2,7 @@ import { getSession, useSession, signIn, signOut } from "next-auth/react";
 import { useState } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Link from "@mui/material/Link";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -9,6 +10,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 
 import run from "./api/run";
+import {makeNewPlaylist} from "./api/ui_actions";
 
 export default function AppBox() {
   const { data: session } = useSession();
@@ -49,6 +51,8 @@ function Component() {
   const [playlists, setPlaylists] = useState([]);
   const [selectedPlaylistIds, setSelectedPlaylistIds] = useState(new Set());
 
+  const [newPlaylistId, setNewPlaylistId] = useState([]);
+
   const getMyPlaylists = async () => {
     const res = await fetch("/api/playlists");
     const f = await res.json();
@@ -66,6 +70,12 @@ function Component() {
     setSelectedPlaylistIds(new Set(selectedPlaylistIds));
   };
 
+  async function onRunClick() {
+    let newPlaylist = await makeNewPlaylist();
+    setNewPlaylistId(newPlaylist.id);
+    return await run(Array.from(selectedPlaylistIds), newPlaylistId);
+  }
+
   if (session) {
     return (
       <>
@@ -75,7 +85,10 @@ function Component() {
           selectedPlaylistIds={selectedPlaylistIds}
           onPlaylistClick={onPlaylistClick}
         />
-        <RunButton selectedPlaylistIds={selectedPlaylistIds} />
+        <RunButton onRunClick={onRunClick} />
+        <StatusBox
+          newPlaylistUrl={`https://open.spotify.com/playlist/${newPlaylistId}`}
+        />
       </>
     );
   }
@@ -117,13 +130,22 @@ function Playlist({ name, imageUrl, selected, onPlaylistClick }) {
   );
 }
 
-function RunButton({ selectedPlaylistIds }) {
-  async function onClick() {
-    return await run(Array.from(selectedPlaylistIds));
-  }
+function RunButton({ onRunClick }) {
   return (
-    <Button variant="outline" onClick={onClick}>
+    <Button variant="outline" onClick={onRunClick}>
       Run
     </Button>
   );
+}
+
+function StatusBox({newPlaylistUrl}) {
+  return (
+    <Box>
+      <NewPlaylistLink newPlaylistUrl={newPlaylistUrl} />
+    </Box>
+  );
+}
+
+function NewPlaylistLink({newPlaylistUrl}) {
+  return <Link href={newPlaylistUrl}>{newPlaylistUrl}</Link>;
 }
