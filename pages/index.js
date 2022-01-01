@@ -135,7 +135,7 @@ function PlaylistBox(props) {
 
 function PlaylistList({ playlists, selectedPlaylistIds, onPlaylistClick }) {
   return (
-    <List sx={{ height: "100%" }}>
+    <List>
       {playlists.map((item) => (
         <Playlist
           key={item.id}
