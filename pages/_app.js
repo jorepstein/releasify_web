@@ -1,16 +1,47 @@
-import {SessionProvider} from 'next-auth/react';
-import '../styles/globals.css';
-import { createTheme, ThemeProvider  } from '@mui/material/styles';
+import { SessionProvider } from "next-auth/react";
+import "../styles/globals.css";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { purple } from "@mui/material/colors";
 
-const darkTheme = createTheme({
+const myThemeBase = createTheme({
   palette: {
-    mode: 'dark',
+    type: "dark",
+    primary: {
+      main: "#0f0",
+    },
+    secondary: {
+      main: "#7b1fa2",
+    },
+    background: {
+      default: "#111111",
+      paper: "#212121",
+    },
+    text: {
+      primary: "#ffebee",
+    },
   },
 });
-export default function App({Component, pageProps: {session, ...pageProps}}) {
+
+const myTheme = createTheme(myThemeBase, {
+  components: {
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          "&.Mui-selected": {
+            background:myThemeBase.palette.secondary.light
+          }
+        },
+      }
+    } 
+  } 
+});
+export default function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}) {
   return (
     <SessionProvider session={session}>
-      <ThemeProvider theme={darkTheme}>
+      <ThemeProvider theme={myTheme}>
         <Component {...pageProps} />
       </ThemeProvider>
     </SessionProvider>

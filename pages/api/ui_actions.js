@@ -32,12 +32,11 @@ async function getNumUserPlaylists(userId) {
       });
   }
 
-export async function getUserPlaylists(userId) {
+export async function* generateUserPlaylists(userId) {
     const res = await fetch("/api/refresh");
     const { access_token } = await res.json();
     spotifyApi.setAccessToken(access_token);
 
-    let allPlaylists = []
     let limit = 50;
     let numAlbums = await getNumUserPlaylists(userId);
     // console.log(numAlbums);
@@ -45,9 +44,7 @@ export async function getUserPlaylists(userId) {
     // 75 albums = 2 batches
     let numBatches = Math.floor(numAlbums / limit) + 1;
     for (let batchNum = 0; batchNum <= numBatches; batchNum++) {
-        let playlists = await getUserPlaylistsBatch(userId, limit, batchNum * limit);
-        allPlaylists.push(...playlists);
+        yield await getUserPlaylistsBatch(userId, limit, batchNum * limit);
       }
-    return allPlaylists;
   }
   

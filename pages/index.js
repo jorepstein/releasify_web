@@ -10,21 +10,20 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 
 import run from "./api/run";
-import { makeNewPlaylist, getUserPlaylists } from "./api/ui_actions";
+import { makeNewPlaylist, generateUserPlaylists } from "./api/ui_actions";
 
 export default function AppBox() {
-  const { data: session } = useSession();
-
   return (
     <Box
       sx={{
         bgcolor: "background.default",
         color: "text.primary",
+        width: "100%",
+        height: "100%",
       }}
     >
-      <LogIn />
-      <hr />
       <Component />
+      <LogIn />
     </Box>
   );
 }
@@ -33,15 +32,20 @@ function LogIn() {
   if (session) {
     return (
       <>
-        Signed in as {session?.token?.email} <br />
-        <button onClick={() => signOut()}>Sign out</button>
+        <hr />
+        <Button variant="outlined" onClick={() => signOut()}>
+          Sign out
+        </Button>
+        Signed in as {session?.token?.email}
       </>
     );
   }
   return (
     <>
-      Not signed in <br />
-      <button onClick={() => signIn("spotify")}>Sign in</button>
+      <Button variant="contained" onClick={() => signIn("spotify")}>
+        Sign in
+      </Button>
+      Not signed in
     </>
   );
 }
@@ -50,12 +54,16 @@ function Component() {
   const { data: session } = useSession();
   const [playlists, setPlaylists] = useState([]);
   const [selectedPlaylistIds, setSelectedPlaylistIds] = useState(new Set());
+  const [newPlaylistId, setNewPlaylistId] = useState("");
 
-  const [newPlaylistId, setNewPlaylistId] = useState([]);
-
-  const getMyPlaylists = async () => {
-    let userPlaylists = await getUserPlaylists(session.user);
-    setPlaylists(userPlaylists);
+  const onGetPlaylistsClick = async () => {
+    let userPlaylists = []
+    for await (let playlistChunk of generateUserPlaylists(session.user)) {
+      if (playlistChunk.length) {
+        userPlaylists = [...userPlaylists, ...playlistChunk]
+        setPlaylists(userPlaylists);
+      }
+    }
   };
 
   const onPlaylistClick = (event, playlistId) => {
@@ -76,15 +84,18 @@ function Component() {
   if (session) {
     return (
       <>
-        <button onClick={() => getMyPlaylists(session.user)}>Get all my playlists</button>
+        <GetPlaylistsButton onGetPlaylistsClick={onGetPlaylistsClick} playlists={playlists}/>
         <PlaylistBox
           playlists={playlists}
           selectedPlaylistIds={selectedPlaylistIds}
           onPlaylistClick={onPlaylistClick}
         />
-        <RunButton onRunClick={onRunClick} />
+        <RunButton onRunClick={onRunClick} playlists={playlists}/>
         <StatusBox
-          newPlaylistUrl={`https://open.spotify.com/playlist/${newPlaylistId}`}
+          newPlaylistUrl={
+            newPlaylistId &&
+            `https://open.spotify.com/playlist/${newPlaylistId}`
+          }
         />
       </>
     );
@@ -92,9 +103,31 @@ function Component() {
   return <div />;
 }
 
+function GetPlaylistsButton({playlists, onGetPlaylistsClick}) {
+  let variant = playlists.length ? "outlined" : "contained"
+  return (
+    <Button
+      variant={variant}
+      onClick={onGetPlaylistsClick}
+      color="primary"
+    >
+      Get all my playlists
+    </Button>
+  );
+}
+
 function PlaylistBox(props) {
   return (
-    <Box sx={{ overflow: "auto", height: "100%", maxHeight: "500px" }}>
+    <Box
+      sx={{
+        overflow: "auto",
+        height: "100%",
+        maxHeight: "500px",
+        border: 4,
+        borderColor: "secondary.main",
+        borderRadius: 5,
+      }}
+    >
       <PlaylistList {...props} />
     </Box>
   );
@@ -120,16 +153,21 @@ function PlaylistList({ playlists, selectedPlaylistIds, onPlaylistClick }) {
 
 function Playlist({ name, imageUrl, selected, onPlaylistClick }) {
   return (
-    <ListItemButton selected={selected} onClick={onPlaylistClick}>
+    <ListItemButton
+      selected={selected}
+      onClick={onPlaylistClick}
+      sx={{ borderBottom: 1, borderColor: "primary.main" }}
+    >
       <img src={imageUrl} width="50" />
-      <ListItemText primary={name} />
+      <ListItemText primary={name} sx={{ color: "primary.main" }} />
     </ListItemButton>
   );
 }
 
-function RunButton({ onRunClick }) {
+function RunButton({ onRunClick, playlists }) {
+  let variant = playlists.length ? "contained" : "outlined";
   return (
-    <Button variant="outline" onClick={onRunClick}>
+    <Button variant={variant} color="primary" onClick={onRunClick}>
       Run
     </Button>
   );
@@ -138,15 +176,15 @@ function RunButton({ onRunClick }) {
 function StatusBox({ newPlaylistUrl }) {
   return (
     <Box>
-      <NewPlaylistLink newPlaylistUrl={newPlaylistUrl} />
+      {newPlaylistUrl && <NewPlaylistLink newPlaylistUrl={newPlaylistUrl} />}
     </Box>
   );
 }
 
 function NewPlaylistLink({ newPlaylistUrl }) {
   return (
-    <Link href={newPlaylistUrl} target="_blank">
+    <Button href={newPlaylistUrl} target="_blank" rel="noopener">
       {newPlaylistUrl}
-    </Link>
+    </Button>
   );
 }
