@@ -1,4 +1,3 @@
-import { lighten } from "@mui/material";
 import { Data } from "dataclass";
 import { useSession, getSession } from "next-auth/react";
 
@@ -6,29 +5,21 @@ var SpotifyWebApi = require("spotify-web-api-node");
 
 const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
-const BASIC = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString("base64");
-const TOKEN_ENDPOINT = `https://accounts.spotify.com/api/token`;
+const REFRESH_ENDPOINT = `/api/refresh`;
 const DAY_IN_SECONDS = 24 * 60 * 60 * 14;
-var spotifyApi = new SpotifyWebApi({
-  // redirectUri: "http://www.example.com/callback",
-});
+var spotifyApi = new SpotifyWebApi();
 
-class Song extends Data {
-  name = "";
-  id = "";
+export async function makeNewPlaylist() {
+  const res = await fetch(REFRESH_ENDPOINT);
+  const { access_token } = await res.json();
+  spotifyApi.setAccessToken(access_token);
+
+  let { body: newPlaylist } = await spotifyApi.createPlaylist("Releasify", {
+    description: "My description",
+    public: false,
+  });
+  return newPlaylist;
 }
-
-class Artist extends Data {
-  name = "";
-  id = "";
-}
-
-class Album extends Data {
-  name = "Anon";
-  age = 25;
-}
-
-class Playlist extends Data {}
 
 async function getTracksOnPlaylistId(sourcePlaylistId, limit, offset) {}
 
@@ -62,6 +53,7 @@ async function getAlbumsForArtistIdBatch(artistId, limit, offset) {
   return await spotifyApi
     .getArtistAlbums(artistId, { limit, offset })
     .then(function ({ body }) {
+        return [];
       return body.items;
     });
 }
@@ -82,7 +74,7 @@ async function* generateAlbumsForArtistId(artistId) {
   // 75 albums = 2 batches
   let numBatches = Math.floor(numAlbums / limit) + 1;
   // console.log("BUM BATCHES", numBatches)
-  for (let batchNum = 0; batchNum <= numBatches; batchNum++) {
+  for (let batchNum = 0; batchNum <= 100; batchNum++) {
     yield await getAlbumsForArtistIdBatch(artistId, limit, batchNum * limit);
   }
 }
@@ -131,20 +123,17 @@ async function* generateTrackIds(sourcePlaylistIds) {
   }
 }
 
-export default async function run(sourcePlaylistIds) {
-  const res = await fetch("/api/refresh");
+export async function runPlaylists(sourcePlaylistIds, newPlaylistId) {
+  const res = await fetch(REFRESH_ENDPOINT);
   const { access_token } = await res.json();
   spotifyApi.setAccessToken(access_token);
-  let { body: newPlaylist } = await spotifyApi.createPlaylist("Releasify", {
-    description: "My description",
-    public: false,
-  });
-  console.log(newPlaylist);
-  let playlistId = newPlaylist.id;
 
+  console.log(sourcePlaylistIds, newPlaylistId);
+
+  try {
   for await (let trackIds of generateTrackIds(sourcePlaylistIds)) {
     trackIds = trackIds.map((track) => `spotify:track:${track.id}`);
     console.log("TRIKS", trackIds);
-    spotifyApi.addTracksToPlaylist(playlistId, trackIds);
-  }
+    spotifyApi.addTracksToPlaylist(newPlaylistId, trackIds);
+  } } catch(err) {console.log("CAUGHT!~", err)}
 }

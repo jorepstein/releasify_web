@@ -1,8 +1,9 @@
 import { SessionProvider } from "next-auth/react";
 import "../styles/globals.css";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { purple } from "@mui/material/colors";
-
+import { Provider } from "react-redux";
+import store from "../app/store";
+import React from "react";
 const myThemeBase = createTheme({
   palette: {
     type: "dark",
@@ -28,22 +29,26 @@ const myTheme = createTheme(myThemeBase, {
       styleOverrides: {
         root: {
           "&.Mui-selected": {
-            background:myThemeBase.palette.secondary.light
-          }
+            background: myThemeBase.palette.secondary.light,
+          },
         },
-      }
-    } 
-  } 
+      },
+    },
+  },
 });
 export default function App({
   Component,
   pageProps: { session, ...pageProps },
 }) {
   return (
-    <SessionProvider session={session}>
-      <ThemeProvider theme={myTheme}>
-        <Component {...pageProps} />
-      </ThemeProvider>
-    </SessionProvider>
+    <Provider store={store}>
+      <SessionProvider session={session}>
+        <ThemeProvider theme={myTheme}>
+          <React.StrictMode>
+            <Component {...pageProps} />
+          </React.StrictMode>
+        </ThemeProvider>
+      </SessionProvider>
+    </Provider>
   );
 }
