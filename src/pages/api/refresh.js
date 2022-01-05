@@ -9,14 +9,8 @@ const handler = async (req, res) => {
   const {
     token: { accessToken },
   } = await getSession({ req });
-  const { access_token } = await getAccessToken(accessToken);
-  return res.status(200).json({ access_token });
-};
-
-export default handler;
-
-const getAccessToken = async (refresh_token) => {
-  const response = await fetch(TOKEN_ENDPOINT, {
+  console.log("TOKEN", accessToken);
+  return await fetch(TOKEN_ENDPOINT, {
     method: "POST",
     headers: {
       Authorization: `Basic ${basic}`,
@@ -24,8 +18,31 @@ const getAccessToken = async (refresh_token) => {
     },
     body: new URLSearchParams({
       grant_type: "refresh_token",
-      refresh_token,
+      refresh_token: accessToken,
     }),
-  });
-  return response.json();
+  })
+    .then((response) => {
+      if (!response.ok) {
+        console.log("!!");
+        console.log(response);
+        console.log(response.status);
+        console.log(response.error_description);
+        throw new Error("Hello");
+        // res.status(200);
+      }
+      return response.json();
+    })
+    .then((response) => {
+      console.log("YOOO", response.access_token);
+      return res.status(200).json({ accessToken: response.access_token });
+    })
+    .catch((err) => {
+      console.log(err);
+      debugger
+      return res.status(err.status).json({ statusText: err.statusText });
+    });
+  // console.log(refreshedToken);
+  // return res.status(200).json({ accessToken: refreshedToken });
 };
+
+export default handler;

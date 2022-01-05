@@ -22,8 +22,6 @@ export function GetPlaylistsButton() {
   const dispatch = useDispatch();
   const { data: session } = useSession();
 
-  //   const arePlaylistsLoaded = useSelector(arePlaylistsLoadedSelector);
-  console.log("omg");
   const variant = true ? "outlined" : "contained";
   return (
     <Button
@@ -39,18 +37,6 @@ export function GetPlaylistsButton() {
 }
 
 export function PlaylistListBox() {
-  const dispatch = useDispatch();
-  const { data: session } = useSession();
-  //   const arePlaylistsLoaded = useSelector(arePlaylistsLoadedSelector);
-
-  //   const [haveLoaded, setHaveLoaded] = useState(false);
-  //     console.log("HSDFGSAFDGFDS")
-  //   if (session && !haveLoaded) {
-  //       console.log("havent loaded")
-  //       setHaveLoaded(true);
-  //       dispatch(getUserPlaylists(session.user))
-
-  //   }
 
   return (
     true && (

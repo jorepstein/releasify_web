@@ -1,6 +1,11 @@
 import { Data } from "dataclass";
 import { useSession, getSession } from "next-auth/react";
-
+import {
+  getPlaylistTracks,
+  getArtistAlbums,
+  getNumArtistsAlbums,
+  getTracksFromAlbums,addTracksToPlaylist
+} from "../job/jobApi";
 var SpotifyWebApi = require("spotify-web-api-node");
 
 const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
@@ -24,65 +29,41 @@ export async function makeNewPlaylist() {
 async function getTracksOnPlaylistId(sourcePlaylistId, limit, offset) {}
 
 async function* generateTracksFromPlaylistID(sourcePlaylistId) {
-  // console.log("Generating", sourcePlaylistId);
-  yield await spotifyApi
-    .getPlaylistTracks(sourcePlaylistId)
-    .then(function (data) {
-      return data.body.items.map((item) => item.track);
-    });
+  yield await getPlaylistTracks(sourcePlaylistId, spotifyApi.getAccessToken());
 }
 
 async function* generateArtistIds(sourcePlaylistIds) {
-  // console.log("WWWW", sourcePlaylistIds)
   for (let sourcePlaylistId of sourcePlaylistIds) {
-    // console.log("Processing", sourcePlaylistId)
     for await (const tracks of generateTracksFromPlaylistID(sourcePlaylistId)) {
       let artists = [];
-      // console.log("TRACKS", tracks)
       tracks.map((track) => {
         artists.push(...track.artists);
       });
       yield artists;
-      // console.log("Artists", artists);
     }
   }
 }
 
-async function getAlbumsForArtistIdBatch(artistId, limit, offset) {
-  // console.log(artistId, limit, offset)
-  return await spotifyApi
-    .getArtistAlbums(artistId, { limit, offset })
-    .then(function ({ body }) {
-        return [];
-      return body.items;
-    });
-}
-
-async function getNumAlbumsFromArtist(artistId) {
-  return await spotifyApi
-    .getArtistAlbums(artistId, { limit: 1 })
-    .then(function (data) {
-      return data.body.total;
-    });
-}
-
 async function* generateAlbumsForArtistId(artistId) {
   let limit = 50;
-  let numAlbums = await getNumAlbumsFromArtist(artistId);
-  // console.log(numAlbums);
+  let numAlbums = await getNumArtistsAlbums(
+    artistId,
+    spotifyApi.getAccessToken()
+  );
   // e.g. 25 albums = 1 batch
   // 75 albums = 2 batches
   let numBatches = Math.floor(numAlbums / limit) + 1;
-  // console.log("BUM BATCHES", numBatches)
-  for (let batchNum = 0; batchNum <= 100; batchNum++) {
-    yield await getAlbumsForArtistIdBatch(artistId, limit, batchNum * limit);
+  for (let batchNum = 0; batchNum <= numBatches; batchNum++) {
+    yield await getArtistAlbums(artistId, spotifyApi.getAccessToken(), {
+      limit,
+      offset: batchNum * limit,
+    });
   }
 }
 
 async function* generateNewAlbums(sourcePlaylistIds) {
   let processedArtistIds = [];
   for await (let artists of generateArtistIds(sourcePlaylistIds)) {
-    //  console.log("ART", artists)
     for (let { id: artistId } of artists) {
       if (!processedArtistIds.includes(artistId)) {
         processedArtistIds.push(artistId);
@@ -103,12 +84,6 @@ async function* generateNewAlbums(sourcePlaylistIds) {
   }
 }
 
-async function getTrackIds(albumIds) {
-  return await spotifyApi.getAlbums(albumIds).then(function ({ body }) {
-    return body.albums.flatMap((album) => album.tracks.items);
-  });
-}
-
 async function* generateTrackIds(sourcePlaylistIds) {
   let processedAlbumIds = [];
   for await (let newAlbums of generateNewAlbums(sourcePlaylistIds)) {
@@ -118,22 +93,21 @@ async function* generateTrackIds(sourcePlaylistIds) {
     );
     processedAlbumIds.push(...albumIdsToProcess);
     if (albumIdsToProcess.length) {
-      yield await getTrackIds(albumIdsToProcess);
+      yield await getTracksFromAlbums(
+        albumIdsToProcess,
+        spotifyApi.getAccessToken()
+      );
     }
   }
 }
 
 export async function runPlaylists(sourcePlaylistIds, newPlaylistId) {
-  const res = await fetch(REFRESH_ENDPOINT);
-  const { access_token } = await res.json();
-  spotifyApi.setAccessToken(access_token);
+  // const res = await fetch(REFRESH_ENDPOINT);
+  const { accessToken } = await fetch(REFRESH_ENDPOINT).then((response)=>response.json());
+  spotifyApi.setAccessToken(accessToken);
 
-  console.log(sourcePlaylistIds, newPlaylistId);
-
-  try {
-  for await (let trackIds of generateTrackIds(sourcePlaylistIds)) {
-    trackIds = trackIds.map((track) => `spotify:track:${track.id}`);
-    console.log("TRIKS", trackIds);
-    spotifyApi.addTracksToPlaylist(newPlaylistId, trackIds);
-  } } catch(err) {console.log("CAUGHT!~", err)}
+  for await (let tracks of generateTrackIds(sourcePlaylistIds)) {
+    let trackUris = tracks.map((track) => `spotify:track:${track.id}`);
+    addTracksToPlaylist(newPlaylistId, trackUris, spotifyApi.getAccessToken());
+  }
 }

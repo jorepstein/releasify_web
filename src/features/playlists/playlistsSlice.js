@@ -10,10 +10,7 @@ const initialState = {
 export const getUserPlaylists = createAsyncThunk(
   "playlists/getUserPlaylists",
   async (userId, thunkAPI) => {
-      console.log("THUBKING")
-    //   debugger
     for await (let userPlaylistsBatch of generateUserPlaylists(userId)) {
-        console.log("DISPATHING")
       thunkAPI.dispatch(
         playlistsSlice.actions.addPlaylists(userPlaylistsBatch)
       );
