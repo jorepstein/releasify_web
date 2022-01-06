@@ -1,7 +1,7 @@
-import { getSession, useSession, signIn, signOut } from "next-auth/react";
 import Box from "@mui/material/Box";
-import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 import {
   GetPlaylistsButton,

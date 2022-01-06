@@ -1,12 +1,9 @@
-import { getSession, useSession, signIn, signOut } from "next-auth/react";
-import { useState, useMemo } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
+import { useSelector } from "react-redux";
 
-import { useDispatch, useSelector } from "react-redux";
 import { newPlaylistUrlSelector } from "./statusSlice";
-import { createSelector } from "reselect";
 
 export function StatusBox() {
   return (

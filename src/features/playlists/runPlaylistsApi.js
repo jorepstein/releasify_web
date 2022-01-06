@@ -1,12 +1,11 @@
-import { Data } from "dataclass";
-import { useSession, getSession } from "next-auth/react";
 import {
-  getPlaylistTracks,
+  addTracksToPlaylist,
   getArtistAlbums,
   getNumArtistsAlbums,
+  getPlaylistTracks,
   getTracksFromAlbums,
-  addTracksToPlaylist,
 } from "../job/jobApi";
+
 var SpotifyWebApi = require("spotify-web-api-node");
 
 const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;

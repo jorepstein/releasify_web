@@ -1,6 +1,7 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { generateUserPlaylists } from "./playlistsApi";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { createSelector } from "reselect";
+
+import { generateUserPlaylists } from "./playlistsApi";
 
 const initialState = {
   userPlaylists: [],

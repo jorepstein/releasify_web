@@ -1,24 +1,22 @@
-import { getSession, useSession, signIn, signOut } from "next-auth/react";
-import { useState, useMemo } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
-import Textfield from "@mui/material/ListItemText";
-
+import { useSession } from "next-auth/react";
+import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  userPlaylistsSelector,
-  makeIsSelectedSelector,
-  togglePlaylistSelection,
-  getUserPlaylists,
-  arePlaylistsLoadedSelector,
-  arePlaylistsSelectedSelector,
-  selectedUserPlaylistIdsSelector,
-} from "./playlistsSlice";
-import { makeNewPlaylist, runPlaylists } from "./runPlaylistsApi";
+
 import { newPlaylistIdSelector, setNewPlaylistId } from "../status/statusSlice";
+import {
+  getUserPlaylists,
+  makeIsSelectedSelector,
+  selectedUserPlaylistIdsSelector,
+  togglePlaylistSelection,
+  userPlaylistsSelector,
+} from "./playlistsSlice";
+import { runPlaylists } from "./runPlaylistsApi";
+
 export function GetPlaylistsButton() {
   const dispatch = useDispatch();
   const { data: session } = useSession();
