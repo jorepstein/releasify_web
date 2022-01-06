@@ -29,21 +29,24 @@ export default function AppBox() {
 function LogIn() {
   const { data: session } = useSession();
   if (session) {
-    return <Box>
+    return (
+      <Box>
         <hr />
         <Button variant="outlined" onClick={() => signOut()}>
           Sign out
         </Button>
         Signed in as {session?.token?.email}
       </Box>
-  };
-  return <Box>
+    );
+  }
+  return (
+    <Box>
       <Button variant="contained" onClick={() => signIn("spotify")}>
         Sign in
       </Button>
       Not signed in
     </Box>
-
+  );
 }
 
 function Component() {

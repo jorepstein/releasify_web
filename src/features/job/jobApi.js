@@ -3,8 +3,7 @@ export async function getPlaylistTracks(playlistId, accessToken, options = {}) {
     `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
     accessToken,
     options
-  )
-    .then((body) => body.items.map((item) => item.track));
+  ).then((body) => body.items.map((item) => item.track));
 }
 
 export async function getArtistAlbums(artistId, accessToken, options = {}) {
@@ -50,8 +49,8 @@ export async function addTracksToPlaylist(
 
 async function fetchEndpoint(endpoint, accessToken, options) {
   let url = endpoint;
-  if (Object.keys(options).length!=0){
-    url += "?" + new URLSearchParams(options)
+  if (Object.keys(options).length != 0) {
+    url += "?" + new URLSearchParams(options);
   }
   return fetch(url, {
     headers: {

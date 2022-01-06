@@ -1,13 +1,12 @@
 html,
 body {
-  font-family: -apple-system, BlinkMacSystemFont, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, Roboto, Oxygen, Ubuntu,
+    Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
   background-color: black;
 }
 
-
 .MuiButton-root {
-    margin: 5px;
+  margin: 5px;
 }
 .MuiTypography-root {
   margin: 5px;

@@ -4,7 +4,8 @@ import {
   getPlaylistTracks,
   getArtistAlbums,
   getNumArtistsAlbums,
-  getTracksFromAlbums,addTracksToPlaylist
+  getTracksFromAlbums,
+  addTracksToPlaylist,
 } from "../job/jobApi";
 var SpotifyWebApi = require("spotify-web-api-node");
 
@@ -103,7 +104,9 @@ async function* generateTrackIds(sourcePlaylistIds) {
 
 export async function runPlaylists(sourcePlaylistIds, newPlaylistId) {
   // const res = await fetch(REFRESH_ENDPOINT);
-  const { accessToken } = await fetch(REFRESH_ENDPOINT).then((response)=>response.json());
+  const { accessToken } = await fetch(REFRESH_ENDPOINT).then((response) =>
+    response.json()
+  );
   spotifyApi.setAccessToken(accessToken);
 
   for await (let tracks of generateTrackIds(sourcePlaylistIds)) {

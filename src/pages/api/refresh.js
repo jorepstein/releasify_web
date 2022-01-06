@@ -38,7 +38,7 @@ const handler = async (req, res) => {
     })
     .catch((err) => {
       console.log(err);
-      debugger
+      debugger;
       return res.status(err.status).json({ statusText: err.statusText });
     });
   // console.log(refreshedToken);

@@ -37,7 +37,6 @@ export function GetPlaylistsButton() {
 }
 
 export function PlaylistListBox() {
-
   return (
     true && (
       <Box

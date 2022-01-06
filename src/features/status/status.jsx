@@ -27,7 +27,7 @@ export function StatusBox() {
 }
 
 function Status() {
-    return <Typography>Hello</Typography>
+  return <Typography>Hello</Typography>;
 }
 
 function NewPlaylistLink() {
