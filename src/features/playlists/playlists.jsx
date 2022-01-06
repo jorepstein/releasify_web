@@ -5,6 +5,7 @@ import Button from "@mui/material/Button";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
+import Textfield from "@mui/material/ListItemText";
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -37,6 +38,9 @@ export function GetPlaylistsButton() {
 }
 
 export function PlaylistListBox() {
+  let filterText,
+    setFilterText = useState("");
+
   return (
     true && (
       <Box
@@ -52,6 +56,14 @@ export function PlaylistListBox() {
         <PlaylistList />
       </Box>
     )
+  );
+}
+
+function FilterEdit({ filterText, setFilterText }) {
+  return (
+    <Box>
+      <TextField id="outlined-basic" label="Outlined" variant="outlined" />
+    </Box>
   );
 }
 
