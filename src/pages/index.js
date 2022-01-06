@@ -12,14 +12,7 @@ import { StatusBox } from "../features/status/status";
 
 export default function AppBox() {
   return (
-    <Stack
-      sx={{
-        bgcolor: "background.default",
-        color: "text.primary",
-        width: "100%",
-        height: "100%",
-      }}
-    >
+    <Stack>
       <Component />
       <LogIn />
     </Stack>
