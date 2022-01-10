@@ -9,7 +9,6 @@ const handler = async (req, res) => {
   const {
     token: { accessToken },
   } = await getSession({ req });
-  console.log("TOKEN", accessToken);
   return await fetch(TOKEN_ENDPOINT, {
     method: "POST",
     headers: {
@@ -23,26 +22,17 @@ const handler = async (req, res) => {
   })
     .then((response) => {
       if (!response.ok) {
-        console.log("!!");
-        console.log(response);
-        console.log(response.status);
-        console.log(response.error_description);
-        throw new Error("Hello");
-        // res.status(200);
+        throw new Error("HTTP Status: " + response.status);
       }
       return response.json();
     })
     .then((response) => {
-      console.log("YOOO", response.access_token);
       return res.status(200).json({ accessToken: response.access_token });
     })
     .catch((err) => {
       console.log(err);
-      debugger;
       return res.status(err.status).json({ statusText: err.statusText });
     });
-  // console.log(refreshedToken);
-  // return res.status(200).json({ accessToken: refreshedToken });
 };
 
 export default handler;

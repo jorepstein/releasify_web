@@ -4,27 +4,13 @@ import {
   getNumArtistsAlbums,
   getPlaylistTracks,
   getTracksFromAlbums,
-} from "../job/jobApi";
+} from "../spotifyApi";
 
 var SpotifyWebApi = require("spotify-web-api-node");
 
-const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
-const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 const REFRESH_ENDPOINT = `/api/refresh`;
 const DAY_IN_SECONDS = 24 * 60 * 60 * 14;
 var spotifyApi = new SpotifyWebApi();
-
-export async function makeNewPlaylist() {
-  const res = await fetch(REFRESH_ENDPOINT);
-  const { access_token } = await res.json();
-  spotifyApi.setAccessToken(access_token);
-
-  let { body: newPlaylist } = await spotifyApi.createPlaylist("Releasify", {
-    description: "My description",
-    public: false,
-  });
-  return newPlaylist;
-}
 
 async function getTracksOnPlaylistId(sourcePlaylistId, limit, offset) {}
 
@@ -61,19 +47,18 @@ async function* generateAlbumsForArtistId(artistId) {
   }
 }
 
-async function* generateNewAlbums(sourcePlaylistIds) {
+async function* generateNewAlbums(sourcePlaylistIds, timeRangeDays) {
   let processedArtistIds = [];
   for await (let artists of generateArtistIds(sourcePlaylistIds)) {
     for (let { id: artistId } of artists) {
       if (!processedArtistIds.includes(artistId)) {
         processedArtistIds.push(artistId);
-        let newAlbumIds = [];
         for await (let albums of generateAlbumsForArtistId(artistId)) {
           let newAlbums = albums.filter((album) => {
-            let releaseTime = new Date(`${album.release_date}`).getTime();
+            let releaseTime = new Date(album.release_date).getTime();
             let currentTime = new Date().getTime();
             let ageOfAlbumInSeconds = currentTime - releaseTime;
-            return ageOfAlbumInSeconds < DAY_IN_SECONDS;
+            return ageOfAlbumInSeconds < timeRangeDays * 24 * 60;
           });
           if (newAlbums.length) {
             yield newAlbums;
@@ -84,9 +69,12 @@ async function* generateNewAlbums(sourcePlaylistIds) {
   }
 }
 
-async function* generateTrackIds(sourcePlaylistIds) {
+async function* generateTrackIds(sourcePlaylistIds, timeRangeDays) {
   let processedAlbumIds = [];
-  for await (let newAlbums of generateNewAlbums(sourcePlaylistIds)) {
+  for await (let newAlbums of generateNewAlbums(
+    sourcePlaylistIds,
+    timeRangeDays
+  )) {
     let newAlbumIds = newAlbums.map((album) => album.id);
     let albumIdsToProcess = newAlbumIds.filter(
       (albumId) => !processedAlbumIds.includes(albumId)
@@ -101,15 +89,21 @@ async function* generateTrackIds(sourcePlaylistIds) {
   }
 }
 
-export async function runPlaylists(sourcePlaylistIds, newPlaylistId) {
-  // const res = await fetch(REFRESH_ENDPOINT);
+export async function runPlaylists(
+  sourcePlaylistIds,
+  targetPlaylistId,
+  timeRangeDays
+) {
   const { accessToken } = await fetch(REFRESH_ENDPOINT).then((response) =>
     response.json()
   );
   spotifyApi.setAccessToken(accessToken);
-
-  for await (let tracks of generateTrackIds(sourcePlaylistIds)) {
+  for await (let tracks of generateTrackIds(sourcePlaylistIds, timeRangeDays)) {
     let trackUris = tracks.map((track) => `spotify:track:${track.id}`);
-    addTracksToPlaylist(newPlaylistId, trackUris, spotifyApi.getAccessToken());
+    addTracksToPlaylist(
+      targetPlaylistId,
+      trackUris,
+      spotifyApi.getAccessToken()
+    );
   }
 }

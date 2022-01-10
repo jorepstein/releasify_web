@@ -10,6 +10,7 @@ import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FixedSizeList as List } from "react-window";
 
+import { optionsSelector } from "../options/optionsSlice";
 import { newPlaylistIdSelector, setNewPlaylistId } from "../status/statusSlice";
 import {
   getUserPlaylists,
@@ -23,15 +24,15 @@ import { runPlaylists } from "./runPlaylistsApi";
 export function GetPlaylistsButton() {
   const dispatch = useDispatch();
   const { data: session } = useSession();
+  const userPlaylists = useSelector(userPlaylistsSelector);
 
-  const variant = true ? "outlined" : "contained";
+  const variant = userPlaylists.length ? "outlined" : "contained";
   return (
     <Button
       variant={variant}
       onClick={() => {
         dispatch(getUserPlaylists(session.user));
       }}
-      color="primary"
       sx={{ width: "200px" }}
     >
       Get all my playlists
@@ -82,8 +83,12 @@ function FilterEdit({ filterText, setFilterText }) {
     >
       <TextField
         label="Search"
+        placeholder="Search"
         variant="outlined"
         size="small"
+        margin="dense"
+        value={filterText}
+        onChange={(ev) => setFilterText(ev.target.value)}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -91,10 +96,6 @@ function FilterEdit({ filterText, setFilterText }) {
             </InputAdornment>
           ),
         }}
-        margin="dense"
-        value={filterText}
-        placeholder="Search"
-        onChange={(ev) => setFilterText(ev.target.value)}
       />
     </Box>
   );
@@ -140,7 +141,7 @@ function Playlist({ name, imageUrl, playlistId, sx }) {
       sx={sx}
     >
       <img src={imageUrl} width="50" />
-      <ListItemText primary={name} sx={{ color: "primary.main" }} />
+      <ListItemText primary={name} />
     </ListItemButton>
   );
 }
@@ -151,20 +152,19 @@ export function RunButton() {
   const selectedPlaylistIds = useSelector(selectedUserPlaylistIdsSelector);
   const newPlaylistId = useSelector(newPlaylistIdSelector);
   const variant = userPlaylists.length ? "contained" : "outlined";
-
+  const options = useSelector(optionsSelector);
   function onRunClick() {
     // let newPlaylist = await makeNewPlaylist();
 
-    dispatch(setNewPlaylistId("2iKFiRdttTeG5fDHWDjSJp"));
-    runPlaylists(selectedPlaylistIds, "2iKFiRdttTeG5fDHWDjSJp");
+    dispatch(setNewPlaylistId(options.targetPlaylistId));
+    runPlaylists(
+      selectedPlaylistIds,
+      options.targetPlaylistId,
+      options.timeRange
+    );
   }
   return (
-    <Button
-      variant={variant}
-      color="primary"
-      onClick={onRunClick}
-      sx={{ width: "100px" }}
-    >
+    <Button variant={variant} onClick={onRunClick} sx={{ width: "100px" }}>
       Run
     </Button>
   );

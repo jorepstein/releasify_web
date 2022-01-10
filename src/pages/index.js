@@ -2,12 +2,15 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useSelector } from "react-redux";
 
+import { OptionsBox } from "../features/options/options";
 import {
   GetPlaylistsButton,
   PlaylistListBox,
   RunButton,
 } from "../features/playlists/playlists";
+import { userPlaylistsSelector } from "../features/playlists/playlistsSlice";
 import { StatusBox } from "../features/status/status";
 
 export default function AppBox() {
@@ -44,16 +47,23 @@ function LogIn() {
 
 function Component() {
   const { data: session } = useSession();
+  const userPlaylists = useSelector(userPlaylistsSelector);
 
-  if (session) {
-    return (
-      <Stack>
-        <GetPlaylistsButton />
-        <PlaylistListBox />
-        <RunButton />
-        <StatusBox />
-      </Stack>
-    );
-  }
-  return <div />;
+  return (
+    <>
+      {session && (
+        <Stack>
+          <GetPlaylistsButton />
+          {userPlaylists.length > 0 && (
+            <>
+              <PlaylistListBox />
+              <OptionsBox />
+              <RunButton />
+              <StatusBox />
+            </>
+          )}
+        </Stack>
+      )}
+    </>
+  );
 }

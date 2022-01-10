@@ -10,18 +10,17 @@ const base = createTheme({
   palette: {
     type: "dark",
     primary: {
-      main: "#0f0",
-      contrastText: "#009688",
+      main: "#00ff00",
     },
     background: {
       default: "#111111",
       paper: "#212121",
     },
     text: {
-      primary: "#000000",
+      primary: "#ffffff",
       disabled: "rgba(255,255,255,0.5)",
-      hint: "rgba(255,255,255,0.5)",
-      secondary: "rgba(255,255,255,0.7)",
+      hint: "rgba(255,255,255,0.4)",
+      secondary: "rgba(255,255,255,0.8)",
     },
     secondary: {
       main: "#7b1fa2",
@@ -35,6 +34,11 @@ const base = createTheme({
     },
     action: {
       hover: "#0000ff",
+    },
+    error: {
+      main: "#f44336",
+      light: "#f6685e",
+      dark: "#aa2e25",
     },
   },
 });
@@ -55,6 +59,10 @@ const myTheme = createTheme(base, {
           "&:hover.Mui-selected": {
             background: "#4caf4f81",
           },
+
+          "& .MuiListItemText-primary": {
+            color: base.palette.primary.main,
+          },
         },
       },
     },
@@ -62,12 +70,15 @@ const myTheme = createTheme(base, {
       styleOverrides: {
         root: {
           background: "#2b2b2bb4",
-          "& .MuiInputLabel-root": { color: "#e0e0e0ff" },
+          "& .MuiInputLabel-root": { color: base.palette.text.hint },
+          "& .MuiInputLabel-root.MuiInputLabel-shrink": {
+            color: base.palette.text.secondary,
+          },
           "& .MuiInputLabel-root.Mui-focused": {
             color: base.palette.primary.main,
           },
           "& .MuiOutlinedInput-input": {
-            color: base.palette.text.secondary,
+            color: base.palette.text.primary,
           },
           "& .MuiOutlinedInput-root fieldset": {
             borderColor: base.palette.primary.light,

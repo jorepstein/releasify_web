@@ -24,18 +24,18 @@ export function StatusBox() {
 }
 
 function Status() {
-  return <Typography>Hello</Typography>;
+  return <Typography></Typography>;
 }
 
 function NewPlaylistLink() {
   const newPlaylistUrl = useSelector(newPlaylistUrlSelector);
-  if (newPlaylistUrl) {
-    return (
-      <Button href={newPlaylistUrl} target="_blank" rel="noopener">
-        {newPlaylistUrl}
-      </Button>
-    );
-  } else {
-    return <div />;
-  }
+  return (
+    <>
+      {newPlaylistUrl && (
+        <Button href={newPlaylistUrl} target="_blank" rel="noopener">
+          {newPlaylistUrl}
+        </Button>
+      )}
+    </>
+  );
 }
