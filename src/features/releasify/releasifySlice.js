@@ -1,5 +1,7 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { createSelector } from "reselect";
+
+import { runPlaylists } from "./releasifyApi";
 
 const initialState = {
   statusDescription: "",
@@ -10,6 +12,20 @@ const initialState = {
   processedArtistIds: [],
   newTrackIds: [],
 };
+
+export const runReleasify = createAsyncThunk(
+  "status/run",
+  async (arg, thunkAPI) => {
+    let { inputPlaylistIds, targetPlaylistId, timeRangeDays } = arg;
+
+    return runPlaylists(
+      inputPlaylistIds,
+      targetPlaylistId,
+      timeRangeDays,
+      thunkAPI
+    );
+  }
+);
 
 export const statusSlice = createSlice({
   name: "status",
@@ -53,18 +69,18 @@ export const {
 } = statusSlice.actions;
 
 export const statusDescriptionSelector = (appState) =>
-  appState.status.statusDescription;
+  appState.releasify.statusDescription;
 export const newPlaylistIdSelector = (appState) =>
-  appState.status.newPlaylistId;
+  appState.releasify.newPlaylistId;
 export const inputPlaylistIdsSelector = (appState) =>
-  appState.status.inputPlaylistIds;
+  appState.releasify.inputPlaylistIds;
 export const processedPlaylistIdsSelector = (appState) =>
-  appState.status.processedPlaylistIds;
+  appState.releasify.processedPlaylistIds;
 export const foundArtistIdsSelector = (appState) =>
-  appState.status.foundArtistIds;
+  appState.releasify.foundArtistIds;
 export const processedArtistIdsSelector = (appState) =>
-  appState.status.processedArtistIds;
-export const newTrackIdsSelector = (appState) => appState.status.newTrackIds;
+  appState.releasify.processedArtistIds;
+export const newTrackIdsSelector = (appState) => appState.releasify.newTrackIds;
 
 export const newPlaylistUrlSelector = createSelector(
   newPlaylistIdSelector,

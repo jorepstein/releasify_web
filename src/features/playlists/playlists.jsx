@@ -10,8 +10,16 @@ import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FixedSizeList as List } from "react-window";
 
-import { optionsSelector } from "../options/optionsSlice";
-import { newPlaylistIdSelector, setNewPlaylistId } from "../status/statusSlice";
+import {
+  generateTargetPlaylist,
+  optionsSelector,
+  targetPlaylistIdSelector,
+} from "../options/optionsSlice";
+import { runReleasify } from "../releasify/releasifySlice";
+import {
+  newPlaylistIdSelector,
+  setNewPlaylistId,
+} from "../releasify/releasifySlice";
 import {
   getUserPlaylists,
   makeIsSelectedSelector,
@@ -19,7 +27,6 @@ import {
   togglePlaylistSelection,
   userPlaylistsSelector,
 } from "./playlistsSlice";
-import { runPlaylists } from "./runPlaylistsApi";
 
 export function GetPlaylistsButton() {
   const dispatch = useDispatch();
@@ -148,19 +155,25 @@ function Playlist({ name, imageUrl, playlistId, sx }) {
 
 export function RunButton() {
   const dispatch = useDispatch();
-  const userPlaylists = useSelector(userPlaylistsSelector);
-  const selectedPlaylistIds = useSelector(selectedUserPlaylistIdsSelector);
-  const newPlaylistId = useSelector(newPlaylistIdSelector);
-  const variant = userPlaylists.length ? "contained" : "outlined";
-  const options = useSelector(optionsSelector);
-  function onRunClick() {
-    // let newPlaylist = await makeNewPlaylist();
+  const { data: session } = useSession();
 
-    dispatch(setNewPlaylistId(options.targetPlaylistId));
-    runPlaylists(
-      selectedPlaylistIds,
-      options.targetPlaylistId,
-      options.timeRange
+  const userPlaylists = useSelector(userPlaylistsSelector);
+  const variant = userPlaylists.length ? "contained" : "outlined";
+  const inputPlaylistIds = useSelector(selectedUserPlaylistIdsSelector);
+  const options = useSelector(optionsSelector);
+  let targetPlaylistId = useSelector(targetPlaylistIdSelector);
+
+  function onRunClick() {
+    if (!options.useExistingPlaylist === true) {
+      targetPlaylistId = dispatch(generateTargetPlaylist(session.user));
+    }
+    dispatch(setNewPlaylistId(targetPlaylistId));
+    dispatch(
+      runReleasify({
+        inputPlaylistIds,
+        targetPlaylistId,
+        timeRangeDays: options.timeRange,
+      })
     );
   }
   return (

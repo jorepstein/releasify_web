@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import { useSelector } from "react-redux";
 
-import { newPlaylistUrlSelector } from "./statusSlice";
+import { newPlaylistUrlSelector } from "../releasify/releasifySlice";
 
 export function StatusBox() {
   return (

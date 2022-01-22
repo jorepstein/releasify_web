@@ -1,5 +1,5 @@
 export async function getAccessToken() {
-  return await fetch(REFRESH_ENDPOINT).then((response) => response.json());
+  return await fetch("/api/refresh").then((response) => response.json());
 }
 
 export async function makeNewPlaylist(userId, accessToken, options = {}) {
@@ -16,6 +16,18 @@ export async function getPlaylistTracks(playlistId, accessToken, options = {}) {
     accessToken,
     options
   ).then((body) => body.items.map((item) => item.track));
+}
+
+export async function getNumPlaylistTracks(
+  playlistId,
+  accessToken,
+  options = {}
+) {
+  return fetchEndpoint(
+    `https://api.spotify.com/v1/playlists/${playlistId}`,
+    accessToken,
+    { fields: "tracks.total", ...options }
+  ).then((body) => body.tracks.total);
 }
 
 export async function getArtistAlbums(artistId, accessToken, options = {}) {
