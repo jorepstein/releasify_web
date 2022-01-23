@@ -10,6 +10,7 @@ import { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FixedSizeList as List } from "react-window";
 
+import { isMobile } from "../../util";
 import {
   generateTargetPlaylist,
   optionsSelector,
@@ -60,18 +61,25 @@ export function PlaylistListBox() {
     });
   });
   return (
-    <Box
-      sx={{
-        border: 4,
-        borderColor: "secondary.main",
-        borderRadius: 5,
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
-      <FilterEdit filterText={filterText} setFilterText={setFilterText} />
-      <PlaylistList rows={filteredRows} />
-    </Box>
+    <>
+      {isMobile() && (
+        <FilterEdit filterText={filterText} setFilterText={setFilterText} />
+      )}
+      <Box
+        sx={{
+          border: 4,
+          borderColor: "secondary.main",
+          borderRadius: 5,
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {!isMobile() && (
+          <FilterEdit filterText={filterText} setFilterText={setFilterText} />
+        )}
+        <PlaylistList rows={filteredRows} />
+      </Box>
+    </>
   );
 }
 
@@ -80,10 +88,10 @@ function FilterEdit({ filterText, setFilterText }) {
     <Box
       sx={{
         display: "flex",
-        justifyContent: "flex-end",
-        position: "absolute",
-        right: 50,
-        "z-index": 1,
+        justifyContent: { md: "flex-end" },
+        position: { md: "absolute" },
+        right: { md: 50 },
+        "z-index": { md: 1 },
       }}
     >
       <TextField
