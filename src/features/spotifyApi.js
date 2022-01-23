@@ -109,9 +109,14 @@ export async function fetchEndpointPost(endpoint, accessToken, options) {
 async function success(response, tryAgain) {
   if (!response.ok) {
     if (response.status == 429) {
+      // Too Many Requests
       await new Promise((resolve) => {
         setTimeout(resolve, 1000);
       });
+      return tryAgain();
+    }
+    if (response.status == 503) {
+      // Service Unavailable
       return tryAgain();
     }
     throw new Error("HTTP Status: " + response.status);
