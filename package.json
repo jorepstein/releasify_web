@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "prettier --write --ignore-path .gitignore ."
+    "format": "prettier --end-of-line lf --write --ignore-path .gitignore ."
   },
   "dependencies": {
     "@emotion/react": "^11.7.0",
