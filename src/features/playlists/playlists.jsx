@@ -17,7 +17,6 @@ import {
 } from "../options/optionsSlice";
 import { runReleasify } from "../releasify/releasifySlice";
 import {
-  newPlaylistIdSelector,
   setInputPlaylistIds,
   setNewPlaylistId,
 } from "../releasify/releasifySlice";
@@ -31,15 +30,13 @@ import {
 
 export function GetPlaylistsButton() {
   const dispatch = useDispatch();
-  const { data: session } = useSession();
   const userPlaylists = useSelector(userPlaylistsSelector);
-
   const variant = userPlaylists.length ? "outlined" : "contained";
   return (
     <Button
       variant={variant}
       onClick={() => {
-        dispatch(getUserPlaylists(session.user));
+        dispatch(getUserPlaylists());
       }}
       sx={{ width: "200px" }}
     >

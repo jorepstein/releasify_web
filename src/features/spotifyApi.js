@@ -63,17 +63,16 @@ export async function addTracksToPlaylist(
   );
 }
 
-export async function getNumUserPlaylists(userId, accessToken, options = {}) {
-  return fetchEndpoint(
-    `https://api.spotify.com/v1/users/${userId}/playlists`,
-    accessToken,
-    { limit: 1, ...options }
-  ).then((body) => body.total);
+export async function getNumUserPlaylists(accessToken, options = {}) {
+  return fetchEndpoint(`https://api.spotify.com/v1/me/playlists`, accessToken, {
+    limit: 1,
+    ...options,
+  }).then((body) => body.total);
 }
 
-export async function getUserPlaylists(userId, accessToken, options = {}) {
+export async function getUserPlaylists(accessToken, options = {}) {
   return fetchEndpoint(
-    `https://api.spotify.com/v1/users/${userId}/playlists`,
+    `https://api.spotify.com/v1/me/playlists`,
     accessToken,
     options
   ).then((body) => body.items);
