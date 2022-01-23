@@ -25,7 +25,15 @@ export const playlistsSlice = createSlice({
   initialState,
   reducers: {
     addPlaylists: (state, action) => {
-      state.userPlaylists.push(...action.payload);
+      // Don't add duplicate playlists
+      let currentPlaylistIds = new Set(
+        state.userPlaylists.map((playlist) => playlist.id)
+      );
+      state.userPlaylists.push(
+        ...action.payload.filter(
+          (playlist) => !currentPlaylistIds.has(playlist.id)
+        )
+      );
     },
     togglePlaylistSelection: (state, action) => {
       let selectedPlaylistIdsSet = new Set(state.selectedUserPlaylistIds);
