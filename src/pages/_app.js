@@ -103,6 +103,15 @@ const myTheme = createTheme(base, {
         },
       },
     },
+    PlaylistListBox: {
+      styleOverrides: {
+        root: {
+          backgroundColor: base.palette.primary.light,
+          borderColor: alpha(base.palette.primary.main, 0.12),
+          color: alpha(base.palette.text.disabled, 0.25),
+        },
+      },
+    },
   },
 });
 export default function App({

@@ -108,12 +108,14 @@ function FilterEdit({ filterText, setFilterText }) {
 
 function PlaylistList({ rows }) {
   return (
-    <Box
-      sx={{
-        overflow: "auto",
-      }}
-    >
-      <List height={500} itemSize={60} itemCount={rows.length} width="100%">
+    <Box>
+      <List
+        height={500}
+        itemSize={60}
+        itemCount={rows.length}
+        width="100%"
+        sx={{ overflow: "auto" }}
+      >
         {({ index, style }) => {
           let item = rows[index];
           return (
