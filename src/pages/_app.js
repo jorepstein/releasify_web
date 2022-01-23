@@ -1,4 +1,4 @@
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { ThemeProvider, alpha, createTheme } from "@mui/material/styles";
 import { SessionProvider } from "next-auth/react";
 import React from "react";
 import { Provider } from "react-redux";
@@ -88,6 +88,17 @@ const myTheme = createTheme(base, {
           },
           "& .MuiOutlinedInput-root.Mui-focused fieldset": {
             borderColor: base.palette.primary.main,
+          },
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          "&.MuiButton-contained.Mui-disabled": {
+            backgroundColor: alpha(base.palette.primary.light, 0.2),
+            borderColor: alpha(base.palette.primary.main, 0.12),
+            color: alpha(base.palette.text.disabled, 0.25),
           },
         },
       },
