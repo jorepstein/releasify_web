@@ -17,7 +17,7 @@ export const runReleasify = createAsyncThunk(
   "status/run",
   async (arg, thunkAPI) => {
     let { inputPlaylistIds, targetPlaylistId, timeRangeDays } = arg;
-
+    thunkAPI.dispatch(statusSlice.actions.clearStatus());
     return runPlaylists(
       inputPlaylistIds,
       targetPlaylistId,
@@ -55,6 +55,18 @@ export const statusSlice = createSlice({
     addNewTrackIds: (state, action) => {
       state.newTrackIds.push(...action.payload);
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(runReleasify.pending, (state, action) => {
+        state.statusDescription = "pending";
+      })
+      .addCase(runReleasify.fulfilled, (state, action) => {
+        state.statusDescription = "fulfilled";
+      })
+      .addCase(runReleasify.rejected, (state, action) => {
+        state.statusDescription = "rejected";
+      });
   },
 });
 

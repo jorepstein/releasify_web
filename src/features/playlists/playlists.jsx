@@ -18,6 +18,7 @@ import {
 import { runReleasify } from "../releasify/releasifySlice";
 import {
   newPlaylistIdSelector,
+  setInputPlaylistIds,
   setNewPlaylistId,
 } from "../releasify/releasifySlice";
 import {
@@ -160,6 +161,7 @@ export function RunButton() {
   const userPlaylists = useSelector(userPlaylistsSelector);
   const variant = userPlaylists.length ? "contained" : "outlined";
   const inputPlaylistIds = useSelector(selectedUserPlaylistIdsSelector);
+  const disabled = inputPlaylistIds.length ? false : true;
   const options = useSelector(optionsSelector);
   let targetPlaylistId = useSelector(targetPlaylistIdSelector);
 
@@ -168,6 +170,7 @@ export function RunButton() {
       targetPlaylistId = dispatch(generateTargetPlaylist(session.user));
     }
     dispatch(setNewPlaylistId(targetPlaylistId));
+    dispatch(setInputPlaylistIds(inputPlaylistIds));
     dispatch(
       runReleasify({
         inputPlaylistIds,
@@ -177,7 +180,12 @@ export function RunButton() {
     );
   }
   return (
-    <Button variant={variant} onClick={onRunClick} sx={{ width: "100px" }}>
+    <Button
+      variant={variant}
+      onClick={onRunClick}
+      sx={{ width: "100px" }}
+      disabled={disabled}
+    >
       Run
     </Button>
   );

@@ -11,6 +11,7 @@ import {
   RunButton,
 } from "../features/playlists/playlists";
 import { userPlaylistsSelector } from "../features/playlists/playlistsSlice";
+import { statusDescriptionSelector } from "../features/releasify/releasifySlice";
 import { StatusBox } from "../features/status/status";
 
 export default function AppBox() {
@@ -48,6 +49,7 @@ function LogIn() {
 function Component() {
   const { data: session } = useSession();
   const userPlaylists = useSelector(userPlaylistsSelector);
+  const statusDescription = useSelector(statusDescriptionSelector);
 
   return (
     <>
@@ -59,7 +61,7 @@ function Component() {
               <PlaylistListBox />
               <OptionsBox />
               <RunButton />
-              <StatusBox />
+              {statusDescription !== "" && <StatusBox />}
             </>
           )}
         </Stack>

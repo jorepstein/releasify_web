@@ -7,6 +7,12 @@ import {
   getPlaylistTracks,
   getTracksFromAlbums,
 } from "../spotifyApi";
+import {
+  addFoundArtistIds,
+  addNewTrackIds,
+  addProcessedArtistIds,
+  addProcessedPlaylistIds,
+} from "./releasifySlice";
 
 async function* generateTracksFromPlaylistID(
   sourcePlaylistId,
@@ -37,8 +43,11 @@ async function* generateArtistIds(sourcePlaylistIds, token, thunkAPI) {
       tracks.map((track) => {
         artists.push(...track.artists);
       });
-      yield artists;
+      let artistIds = artists.map((artist) => artist.id);
+      thunkAPI.dispatch(addFoundArtistIds(artistIds));
+      yield artistIds;
     }
+    thunkAPI.dispatch(addProcessedPlaylistIds([sourcePlaylistId]));
   }
 }
 
@@ -63,12 +72,12 @@ async function* generateNewAlbums(
   thunkAPI
 ) {
   let processedArtistIds = [];
-  for await (let artists of generateArtistIds(
+  for await (let artistIds of generateArtistIds(
     sourcePlaylistIds,
     token,
     thunkAPI
   )) {
-    for (let { id: artistId } of artists) {
+    for (let artistId of artistIds) {
       if (!processedArtistIds.includes(artistId)) {
         processedArtistIds.push(artistId);
         for await (let albums of generateAlbumsForArtistId(
@@ -86,6 +95,7 @@ async function* generateNewAlbums(
             yield newAlbums;
           }
         }
+        thunkAPI.dispatch(addProcessedArtistIds([artistId]));
       }
     }
   }
@@ -129,7 +139,9 @@ export async function runPlaylists(
     accessToken,
     thunkAPI
   )) {
-    let trackUris = tracks.map((track) => `spotify:track:${track.id}`);
+    let trackIds = tracks.map((track) => track.id);
+    thunkAPI.dispatch(addNewTrackIds(trackIds));
+    let trackUris = trackIds.map((trackId) => `spotify:track:${trackId}`);
     addTracksToPlaylist(targetPlaylistId, trackUris, accessToken);
   }
 }

@@ -6,7 +6,14 @@ async function getUserPlaylistsBatch(userId, limit, offset) {
   return await spotifyApi
     .getUserPlaylists(userId, { limit, offset })
     .then(function ({ body }) {
-      return body.items;
+      return body.items.map((playlist) => {
+        return {
+          id: playlist.id,
+          name: playlist.name,
+          images: playlist.images,
+          description: playlist.description,
+        };
+      });
     });
 }
 

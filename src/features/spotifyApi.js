@@ -65,7 +65,7 @@ export async function addTracksToPlaylist(
     `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
     accessToken,
     {
-      tracks: trackUris,
+      uris: trackUris,
       ...options,
     }
   );
