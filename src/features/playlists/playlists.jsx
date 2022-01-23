@@ -109,6 +109,9 @@ function FilterEdit({ filterText, setFilterText }) {
             </InputAdornment>
           ),
         }}
+        sx={{
+          width: { xs: "100%" },
+        }}
       />
     </Box>
   );

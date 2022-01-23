@@ -26,7 +26,7 @@ export function OptionsBox() {
         borderRadius: 5,
         position: "relative",
         overflow: "hidden",
-        width: 400,
+        minWidth: { md: 400 },
       }}
     >
       <TimeRangeEdit />
@@ -34,7 +34,6 @@ export function OptionsBox() {
     </Box>
   );
 }
-const TIME_RANGE_REGEXP = new RegExp("^[0-9]*$");
 
 function TimeRangeEdit() {
   const timeRange = useSelector(timeRangeSelector);
