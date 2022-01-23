@@ -2,6 +2,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import { signIn, signOut, useSession } from "next-auth/react";
+import Head from "next/head";
 import { useSelector } from "react-redux";
 
 import { OptionsBox } from "../features/options/options";
@@ -16,10 +17,16 @@ import { StatusBox } from "../features/status/status";
 
 export default function AppBox() {
   return (
-    <Stack>
-      <Component />
-      <LogIn />
-    </Stack>
+    <div className="container">
+      <Head>
+        <title>Releasify</title>
+        <link rel="icon" href="/favicon.svg" />
+      </Head>
+      <Stack>
+        <Component />
+        <LogIn />
+      </Stack>
+    </div>
   );
 }
 
