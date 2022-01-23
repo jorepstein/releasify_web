@@ -2,12 +2,81 @@ export async function getAccessToken() {
   return await fetch("/api/refresh").then((response) => response.json());
 }
 
+/**
+ * Albums
+ */
+
+export async function getTracksFromAlbums(albumIds, accessToken, options = {}) {
+  return fetchEndpoint("https://api.spotify.com/v1/albums", accessToken, {
+    ids: albumIds,
+    ...options,
+  }).then((body) => {
+    return body.albums.flatMap((album) => album.tracks.items);
+  });
+}
+
+/**
+ * Artists
+ */
+
+export async function getArtistAlbums(artistId, accessToken, options = {}) {
+  return fetchEndpoint(
+    `https://api.spotify.com/v1/artists/${artistId}/albums`,
+    accessToken,
+    options
+  ).then((body) => body.items);
+}
+
+export async function getNumArtistsAlbums(artistId, accessToken, options = {}) {
+  return fetchEndpoint(
+    `https://api.spotify.com/v1/artists/${artistId}/albums`,
+    accessToken,
+    { limit: 1, ...options }
+  ).then((body) => body.total);
+}
+
+/**
+ * PLAYLISTS
+ */
+
 export async function makeNewPlaylist(userId, accessToken, options = {}) {
   return fetchEndpointPost(
     `https://api.spotify.com/v1/users/${userId}/playlists`,
     accessToken,
     options
   ).then((body) => body.items.map((item) => item.track));
+}
+
+export async function addTracksToPlaylist(
+  playlistId,
+  trackUris,
+  accessToken,
+  options = {}
+) {
+  return fetchEndpoint(
+    `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+    accessToken,
+    {
+      uris: trackUris,
+      ...options,
+    }
+  );
+}
+
+export async function getNumUserPlaylists(userId, accessToken, options = {}) {
+  return fetchEndpoint(
+    `https://api.spotify.com/v1/users/${userId}/playlists`,
+    accessToken,
+    { limit: 1, ...options }
+  ).then((body) => body.total);
+}
+
+export async function getUserPlaylists(userId, accessToken, options = {}) {
+  return fetchEndpoint(
+    `https://api.spotify.com/v1/users/${userId}/playlists`,
+    accessToken,
+    options
+  ).then((body) => body.items);
 }
 
 export async function getPlaylistTracks(playlistId, accessToken, options = {}) {
@@ -28,47 +97,6 @@ export async function getNumPlaylistTracks(
     accessToken,
     { fields: "tracks.total", ...options }
   ).then((body) => body.tracks.total);
-}
-
-export async function getArtistAlbums(artistId, accessToken, options = {}) {
-  return fetchEndpoint(
-    `https://api.spotify.com/v1/artists/${artistId}/albums`,
-    accessToken,
-    options
-  ).then((body) => body.items);
-}
-
-export async function getNumArtistsAlbums(artistId, accessToken, options = {}) {
-  return fetchEndpoint(
-    `https://api.spotify.com/v1/artists/${artistId}/albums`,
-    accessToken,
-    { limit: 1, ...options }
-  ).then((body) => body.total);
-}
-
-export async function getTracksFromAlbums(albumIds, accessToken, options = {}) {
-  return fetchEndpoint("https://api.spotify.com/v1/albums", accessToken, {
-    ids: albumIds,
-    ...options,
-  }).then((body) => {
-    return body.albums.flatMap((album) => album.tracks.items);
-  });
-}
-
-export async function addTracksToPlaylist(
-  playlistId,
-  trackUris,
-  accessToken,
-  options = {}
-) {
-  return fetchEndpoint(
-    `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
-    accessToken,
-    {
-      uris: trackUris,
-      ...options,
-    }
-  );
 }
 
 async function fetchEndpoint(endpoint, accessToken, options) {
