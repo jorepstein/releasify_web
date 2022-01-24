@@ -39,12 +39,12 @@ export async function getNumArtistsAlbums(artistId, accessToken, options = {}) {
  * PLAYLISTS
  */
 
-export async function makeNewPlaylist(userId, accessToken, options = {}) {
+export async function makeNewPlaylist(accessToken, options = {}) {
   return fetchEndpointPost(
-    `https://api.spotify.com/v1/users/${userId}/playlists`,
+    `https://api.spotify.com/v1/me/playlists`,
     accessToken,
     options
-  ).then((body) => body.items.map((item) => item.track));
+  ).then((body) => body.id);
 }
 
 export async function addTracksToPlaylist(
@@ -121,9 +121,7 @@ export async function fetchEndpointPost(endpoint, accessToken, options) {
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "Content-Type: application/json",
     },
-    body: new URLSearchParams({
-      ...options,
-    }),
+    body: JSON.stringify(options),
   }).then(
     (response) =>
       success(response, () =>

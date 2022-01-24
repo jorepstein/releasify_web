@@ -15,18 +15,18 @@ if (process.env.NODE_ENV == "development") {
 }
 export const generateTargetPlaylist = createAsyncThunk(
   "options/generateTargetPlaylist",
-  async (userId, thunkAPI) => {
+  async (_, thunkAPI) => {
     const { accessToken } = await fetch("/api/refresh").then((response) =>
       response.json()
     );
-    const targetPlaylistId = await makeNewPlaylist(userId, accessToken, {
+    const targetPlaylistId = await makeNewPlaylist(accessToken, {
       name: "Releasify",
       public: "false",
     });
     thunkAPI.dispatch(
       optionsSlice.actions.setTargetPlaylistId(targetPlaylistId)
     );
-    return targetPlaylistIdSelector(thunkAPI.getState());
+    return targetPlaylistId;
   }
 );
 

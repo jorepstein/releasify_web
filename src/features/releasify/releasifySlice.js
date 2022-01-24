@@ -15,9 +15,10 @@ const initialState = {
 
 export const runReleasify = createAsyncThunk(
   "status/run",
-  async (arg, thunkAPI) => {
-    let { inputPlaylistIds, targetPlaylistId, timeRangeDays } = arg;
+  async ({ inputPlaylistIds, targetPlaylistId, timeRangeDays }, thunkAPI) => {
     thunkAPI.dispatch(statusSlice.actions.clearStatus());
+    thunkAPI.dispatch(setNewPlaylistId(targetPlaylistId));
+    thunkAPI.dispatch(setInputPlaylistIds(inputPlaylistIds));
     return runPlaylists(
       inputPlaylistIds,
       targetPlaylistId,

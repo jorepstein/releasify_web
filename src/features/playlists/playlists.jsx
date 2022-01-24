@@ -166,7 +166,6 @@ function Playlist({ name, imageUrl, playlistId, sx }) {
 
 export function RunButton() {
   const dispatch = useDispatch();
-  const { data: session } = useSession();
 
   const userPlaylists = useSelector(userPlaylistsSelector);
   const variant = userPlaylists.length ? "contained" : "outlined";
@@ -175,12 +174,12 @@ export function RunButton() {
   const options = useSelector(optionsSelector);
   let targetPlaylistId = useSelector(targetPlaylistIdSelector);
 
-  function onRunClick() {
+  async function onRunClick() {
     if (!options.useExistingPlaylist === true) {
-      targetPlaylistId = dispatch(generateTargetPlaylist(session.user));
+      let action = await dispatch(generateTargetPlaylist());
+      targetPlaylistId = action.payload;
     }
-    dispatch(setNewPlaylistId(targetPlaylistId));
-    dispatch(setInputPlaylistIds(inputPlaylistIds));
+
     dispatch(
       runReleasify({
         inputPlaylistIds,
