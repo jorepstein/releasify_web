@@ -39,7 +39,7 @@ function LogIn() {
         <Button variant="outlined" onClick={() => signOut()}>
           Sign out
         </Button>
-        Signed in as {session?.token?.email} TEST
+        Signed in as {session?.token?.email}
       </Box>
     );
   }
