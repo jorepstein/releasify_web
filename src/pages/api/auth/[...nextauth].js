@@ -6,6 +6,12 @@ export default NextAuth({
     SpotifyProvider({
       clientId: process.env.SPOTIFY_CLIENT_ID,
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+      authorization: {
+        params: {
+          scope:
+            "user-read-email playlist-read-public playlist-read-private  playlist-read-collaborative playlist-modify-public playlist-modify-private",
+        },
+      },
     }),
   ],
   secret: process.env.NEXT_AUTH_SECRET,

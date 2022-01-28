@@ -145,3 +145,25 @@ export async function runPlaylists(
     addTracksToPlaylist(targetPlaylistId, trackUris, accessToken);
   }
 }
+
+async function findArtistsOnPlaylists(
+  sourcePlaylistIds,
+  accessToken,
+  thunkAPI
+) {
+  for (let sourcePlaylistId of sourcePlaylistIds) {
+    for await (const tracks of generateTracksFromPlaylistID(
+      sourcePlaylistId,
+      accessToken,
+      thunkAPI
+    )) {
+      let artists = [];
+      tracks.map((track) => {
+        artists.push(...track.artists);
+      });
+      let artistIds = artists.map((artist) => artist.id);
+      thunkAPI.dispatch(addFoundArtistIds(artistIds));
+    }
+    thunkAPI.dispatch(addProcessedPlaylistIds([sourcePlaylistId]));
+  }
+}
